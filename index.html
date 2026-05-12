@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PrayGirl.INC Blog</title>
+  <style>
+    :root {
+      --page-bg: #ffdce5;
+      --rose: #d91849;
+      --pink: #fff1f6;
+      --lime: #b7d957;
+      --ink: #5f2135;
+      --white: #fffdfd;
+      --shadow: 0 10px 30px rgba(142, 21, 57, 0.16);
+      --font: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font);
+      color: var(--ink);
+      background-color: var(--page-bg);
+      background-image: radial-gradient(circle at 1px 1px, rgba(205,31,73,.28) 1px, transparent 0);
+      background-size: 18px 18px;
+    }
+
+    button, input, textarea, select { font-family: inherit; }
+
+    .app {
+      display: grid;
+      grid-template-columns: minmax(320px, 1fr) 330px;
+      gap: 16px;
+      width: min(1250px, calc(100% - 24px));
+      margin: 12px auto;
+      align-items: start;
+    }
+
+    .site-shell {
+      position: relative;
+      min-height: 1250px;
+      overflow: hidden;
+      border: 4px solid #fff;
+      border-radius: 20px;
+      background: rgba(255,255,255,.72);
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border: 2px solid var(--rose);
+      border-radius: 16px;
+      padding: 18px;
+      color: white;
+      background: linear-gradient(120deg, #a70525, #f26a8d 45%, #c7e85b);
+      box-shadow: var(--shadow);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: .28;
+      background-image: radial-gradient(circle, #fff 2px, transparent 3px);
+      background-size: 30px 30px;
+      pointer-events: none;
+    }
+
+    .hero-inner { position: relative; z-index: 1; }
+
+    .editable-title {
+      width: 100%;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: inherit;
+      font-size: clamp(28px, 5vw, 54px);
+      font-weight: 900;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      text-shadow: 0 3px 0 rgba(112, 0, 27, .35);
+    }
+
+    .editable-subtitle {
+      width: 100%;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: inherit;
+      font-weight: 800;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    .nav-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 12px 0;
+      padding: 10px;
+      border: 2px solid #f4b8c8;
+      border-radius: 14px;
+      background: rgba(255,255,255,.88);
+    }
+
+    .nav-tab {
+      cursor: pointer;
+      border: 2px solid #f089a4;
+      border-radius: 8px;
+      background: #ffd7e2;
+      color: #9c183e;
+      padding: 7px 10px;
+      font-weight: 900;
+      transition: transform .15s ease, background .15s ease;
+    }
+
+    .nav-tab:hover { transform: translateY(-2px); background: #efffc2; color: #6c8a10; }
+
+    .section-card {
+      position: absolute;
+      overflow: hidden;
+      border: 2px solid var(--rose);
+      border-radius: 12px;
+      background: #fff7fb;
+      box-shadow: var(--shadow);
+      min-width: 220px;
+      min-height: 150px;
+    }
+
+    .section-card.selected { outline: 5px solid rgba(183,217,87,.55); }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      cursor: move;
+      user-select: none;
+      padding: 8px 10px;
+      color: white;
+      background: var(--rose);
+      font-weight: 900;
+    }
+
+    .section-title {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .section-body {
+      height: calc(100% - 39px);
+      overflow: auto;
+      padding: 12px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+    }
+
+    .tiny-button {
+      cursor: pointer;
+      border: 0;
+      border-radius: 7px;
+      background: rgba(255,255,255,.25);
+      color: white;
+      padding: 4px 7px;
+      font-weight: 900;
+    }
+
+    .resize-handle {
+      position: absolute;
+      right: 4px;
+      bottom: 4px;
+      width: 18px;
+      height: 18px;
+      cursor: nwse-resize;
+      border-radius: 5px;
+      background: rgba(255,255,255,.8);
+      border: 1px solid rgba(0,0,0,.15);
+    }
+
+    .profile-wrap { display: flex; gap: 12px; align-items: flex-start; }
+    .profile-img, .gallery-img {
+      object-fit: cover;
+      border: 2px solid currentColor;
+      border-radius: 10px;
+      background: white;
+    }
+    .profile-img { width: 96px; height: 96px; flex: 0 0 auto; }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(82px, 1fr));
+      gap: 8px;
+    }
+    .gallery-img { width: 100%; aspect-ratio: 1; transition: transform .15s ease; }
+    .gallery-img:hover { transform: rotate(-2deg) scale(1.04); }
+
+    .link-list { display: grid; gap: 9px; white-space: normal; }
+    .link-list a {
+      display: block;
+      padding: 9px;
+      border: 1px solid currentColor;
+      border-radius: 8px;
+      background: rgba(255,255,255,.72);
+      color: inherit;
+      font-weight: 900;
+      text-decoration: underline dotted;
+    }
+
+    .poll-question, .poll-winner {
+      border-radius: 10px;
+      background: rgba(255,255,255,.75);
+      padding: 9px;
+      font-weight: 900;
+      white-space: normal;
+    }
+
+    .poll-option {
+      width: 100%;
+      cursor: pointer;
+      margin-top: 8px;
+      border: 1px solid currentColor;
+      border-radius: 10px;
+      background: rgba(255,255,255,.85);
+      color: inherit;
+      padding: 9px;
+      text-align: left;
+      font-weight: 800;
+    }
+
+    .bar {
+      height: 8px;
+      margin-top: 6px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.08);
+      overflow: hidden;
+    }
+    .bar-fill { height: 100%; border-radius: inherit; background: currentColor; }
+
+    .panel {
+      position: sticky;
+      top: 12px;
+      max-height: calc(100vh - 24px);
+      overflow: auto;
+      border: 4px solid #fff;
+      border-radius: 20px;
+      background: rgba(255,255,255,.93);
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
+
+    .panel h2 { margin: 0 0 10px; color: var(--rose); }
+    .panel h3 { margin: 14px 0 8px; color: #6e8e13; }
+
+    .control-box {
+      display: grid;
+      gap: 9px;
+      margin-bottom: 12px;
+      padding: 12px;
+      border: 2px solid #ffd0dd;
+      border-radius: 14px;
+      background: #fff4f7;
+    }
+
+    .control-box label { font-size: 12px; font-weight: 900; }
+    .control-box input, .control-box textarea, .control-box select {
+      width: 100%;
+      border: 1px solid #e8a4b6;
+      border-radius: 8px;
+      background: white;
+      padding: 8px;
+      color: var(--ink);
+    }
+    .control-box textarea { min-height: 95px; resize: vertical; }
+
+    .button-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+    .main-button {
+      cursor: pointer;
+      border: 0;
+      border-radius: 10px;
+      background: var(--rose);
+      color: white;
+      padding: 10px;
+      font-weight: 900;
+      box-shadow: 0 6px 14px rgba(217, 24, 73, .18);
+    }
+    .main-button.secondary { background: #7f9f19; }
+    .main-button.soft { background: #f28ca7; }
+    .main-button.danger { background: #9a1233; }
+
+    .mini-note {
+      margin-top: 12px;
+      border-radius: 14px;
+      background: #efffc2;
+      padding: 10px;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .bubble {
+      position: absolute;
+      pointer-events: none;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.9);
+      background: rgba(255,255,255,.55);
+      animation: floatBubble 1.15s ease-out forwards;
+    }
+
+    @keyframes floatBubble {
+      from { opacity: .9; transform: translate(0, 0) scale(.4); }
+      to { opacity: 0; transform: translate(var(--drift), -95px) scale(1.7); }
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%);
+      z-index: 999;
+      display: none;
+      border-radius: 999px;
+      background: #72152c;
+      color: white;
+      padding: 11px 18px;
+      box-shadow: var(--shadow);
+      font-weight: 900;
+    }
+    .toast.show { display: block; }
+
+    @media (max-width: 900px) {
+      .app { grid-template-columns: 1fr; }
+      .panel { position: relative; top: 0; max-height: none; }
+      .site-shell { min-height: 1450px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="site-shell" id="siteShell">
+      <header class="hero">
+        <div class="hero-inner">
+          <input id="pageTitle" class="editable-title" aria-label="Page title" />
+          <input id="pageSubtitle" class="editable-subtitle" aria-label="Page subtitle" />
+        </div>
+      </header>
+
+      <nav class="nav-tabs" id="navTabs"></nav>
+      <div id="sectionLayer"></div>
+    </section>
+
+    <aside class="panel">
+      <h2>Control Panel ✦</h2>
+
+      <div class="control-box">
+        <label>Page color</label>
+        <input type="color" id="pageColor" />
+
+        <label>Page font</label>
+        <select id="pageFont">
+          <option value="Verdana, Geneva, Tahoma, sans-serif">Verdana</option>
+          <option value="Georgia, serif">Georgia</option>
+          <option value="Trebuchet MS, sans-serif">Trebuchet MS</option>
+          <option value="Courier New, monospace">Courier New</option>
+          <option value="Comic Sans MS, cursive">Comic Sans MS</option>
+        </select>
+
+        <button class="main-button soft" id="soundToggle">Sound: on</button>
+      </div>
+
+      <div class="control-box" id="sectionEditor">
+        <h3>Editing section</h3>
+        <label>Section title</label>
+        <input id="sectionTitle" />
+
+        <div class="button-row">
+          <label>Box color<input type="color" id="sectionBg" /></label>
+          <label>Accent<input type="color" id="sectionAccent" /></label>
+        </div>
+
+        <label>Font</label>
+        <select id="sectionFont">
+          <option value="Verdana, Geneva, Tahoma, sans-serif">Verdana</option>
+          <option value="Georgia, serif">Georgia</option>
+          <option value="Trebuchet MS, sans-serif">Trebuchet MS</option>
+          <option value="Courier New, monospace">Courier New</option>
+          <option value="Comic Sans MS, cursive">Comic Sans MS</option>
+        </select>
+
+        <label>Font size <span id="fontSizeLabel"></span></label>
+        <input type="range" id="sectionSize" min="11" max="30" />
+
+        <label id="bodyLabel">Body text</label>
+        <textarea id="sectionBody"></textarea>
+
+        <label>Add image</label>
+        <input type="file" id="imageUpload" accept="image/*" />
+
+        <div id="pollEditor" style="display:none"></div>
+        <div id="linkEditor" style="display:none"></div>
+      </div>
+
+      <div class="control-box">
+        <button class="main-button" id="addSectionBtn">+ Add section</button>
+        <button class="main-button secondary" id="addTabBtn">+ Add tab for selected</button>
+        <button class="main-button soft" id="saveBtn">Save now</button>
+        <button class="main-button danger" id="deleteSectionBtn">Delete selected</button>
+        <button class="main-button danger" id="resetBtn">Reset whole page</button>
+      </div>
+
+      <p class="mini-note">
+        This version is one single <strong>index.html</strong> file. No React. No install. No broken imports. Upload it to GitHub Pages or Netlify and your page can be public for free or almost free.
+      </p>
+    </aside>
+  </main>
+
+  <div class="toast" id="toast">Saved ♡</div>
+
+  <script>
+    const STORAGE_KEY = "praygirl-public-blog-v1";
+
+    const starterData = {
+      page: {
+        title: "PrayGirl.INC",
+        subtitle: "softgirl faith blog + digital diary",
+        bg: "#ffdce5",
+        font: "Verdana, Geneva, Tahoma, sans-serif",
+        sound: true
+      },
+      tabs: [
+        { label: "Home", target: "welcome" },
+        { label: "Blog", target: "blurb" },
+        { label: "Poll", target: "poll" },
+        { label: "Gallery", target: "friends" },
+        { label: "Links", target: "links" }
+      ],
+      sections: [
+        {
+          id: "welcome",
+          type: "profile",
+          title: "♡ Welcome Booth",
+          x: 26,
+          y: 176,
+          w: 286,
+          h: 260,
+          bg: "#fff7fb",
+          accent: "#b7d957",
+          font: "Verdana, Geneva, Tahoma, sans-serif",
+          size: 16,
+          body: "Hi angel! This is your softgirl faith corner. Add your current mood, links, prayer notes, BTS updates, and tiny internet treasures here.",
+          image: "https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?auto=format&fit=crop&w=400&q=80"
+        },
+        {
+          id: "blurb",
+          type: "text",
+          title: "username's blurbs",
+          x: 338,
+          y: 176,
+          w: 426,
+          h: 255,
+          bg: "#fff0f4",
+          accent: "#e25176",
+          font: "Georgia, serif",
+          size: 17,
+          body: "about me: name + age / soft life in progress / God at the center / building pretty systems for a calmer life.\n\nClick a section to edit it. Drag the title bar to move it. Resize from the tiny square in the bottom-right corner."
+        },
+        {
+          id: "poll",
+          type: "poll",
+          title: "Voting Booth",
+          x: 26,
+          y: 456,
+          w: 344,
+          h: 268,
+          bg: "#fffaf2",
+          accent: "#d91849",
+          font: "Verdana, Geneva, Tahoma, sans-serif",
+          size: 15,
+          question: "What should I post next?",
+          options: [
+            { text: "DITL vlog", votes: 18 },
+            { text: "Faith mindset", votes: 25 },
+            { text: "Digital product BTS", votes: 14 },
+            { text: "Soft girl routine", votes: 21 }
+          ],
+          endsAt: Date.now() + 1000 * 60 * 60 * 6,
+          revealWinner: false
+        },
+        {
+          id: "friends",
+          type: "gallery",
+          title: "Friend Space",
+          x: 391,
+          y: 456,
+          w: 373,
+          h: 268,
+          bg: "#f8ffe2",
+          accent: "#b7d957",
+          font: "Verdana, Geneva, Tahoma, sans-serif",
+          size: 15,
+          body: "Drop favorite pictures here. Upload files from your computer using the control panel.",
+          images: [
+            "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=250&q=80",
+            "https://images.unsplash.com/photo-1528825871115-3581a5387919?auto=format&fit=crop&w=250&q=80",
+            "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=250&q=80",
+            "https://images.unsplash.com/photo-1481349518771-20055b2a7b24?auto=format&fit=crop&w=250&q=80"
+          ]
+        },
+        {
+          id: "links",
+          type: "links",
+          title: "Linkbase",
+          x: 26,
+          y: 746,
+          w: 738,
+          h: 164,
+          bg: "#fff6f8",
+          accent: "#d91849",
+          font: "Verdana, Geneva, Tahoma, sans-serif",
+          size: 15,
+          links: [
+            { label: "Shop digital planners", url: "#shop" },
+            { label: "Read my blog", url: "#blog" },
+            { label: "Pinterest garden", url: "#pinterest" }
+          ]
+        }
+      ]
+    };
+
+    let data = loadData();
+    let selectedId = data.sections[0]?.id || "welcome";
+    let dragState = null;
+    let resizeState = null;
+
+    const siteShell = document.getElementById("siteShell");
+    const navTabs = document.getElementById("navTabs");
+    const sectionLayer = document.getElementById("sectionLayer");
+    const toast = document.getElementById("toast");
+
+    const pageTitle = document.getElementById("pageTitle");
+    const pageSubtitle = document.getElementById("pageSubtitle");
+    const pageColor = document.getElementById("pageColor");
+    const pageFont = document.getElementById("pageFont");
+    const soundToggle = document.getElementById("soundToggle");
+
+    const sectionTitle = document.getElementById("sectionTitle");
+    const sectionBg = document.getElementById("sectionBg");
+    const sectionAccent = document.getElementById("sectionAccent");
+    const sectionFont = document.getElementById("sectionFont");
+    const sectionSize = document.getElementById("sectionSize");
+    const fontSizeLabel = document.getElementById("fontSizeLabel");
+    const sectionBody = document.getElementById("sectionBody");
+    const bodyLabel = document.getElementById("bodyLabel");
+    const imageUpload = document.getElementById("imageUpload");
+    const pollEditor = document.getElementById("pollEditor");
+    const linkEditor = document.getElementById("linkEditor");
+
+    document.getElementById("addSectionBtn").addEventListener("click", addSection);
+    document.getElementById("addTabBtn").addEventListener("click", addTab);
+    document.getElementById("saveBtn").addEventListener("click", () => { saveData(); showToast("Saved ♡"); });
+    document.getElementById("deleteSectionBtn").addEventListener("click", deleteSelectedSection);
+    document.getElementById("resetBtn").addEventListener("click", resetPage);
+
+    pageTitle.addEventListener("input", () => { data.page.title = pageTitle.value; saveData(); });
+    pageSubtitle.addEventListener("input", () => { data.page.subtitle = pageSubtitle.value; saveData(); });
+    pageColor.addEventListener("input", () => { data.page.bg = pageColor.value; render(); saveData(); });
+    pageFont.addEventListener("change", () => { data.page.font = pageFont.value; render(); saveData(); });
+    soundToggle.addEventListener("click", () => { data.page.sound = !data.page.sound; render(); saveData(); });
+
+    sectionTitle.addEventListener("input", () => updateSelected({ title: sectionTitle.value }));
+    sectionBg.addEventListener("input", () => updateSelected({ bg: sectionBg.value }));
+    sectionAccent.addEventListener("input", () => updateSelected({ accent: sectionAccent.value }));
+    sectionFont.addEventListener("change", () => updateSelected({ font: sectionFont.value }));
+    sectionSize.addEventListener("input", () => updateSelected({ size: Number(sectionSize.value) }));
+    sectionBody.addEventListener("input", () => updateSelected({ body: sectionBody.value }));
+
+    imageUpload.addEventListener("change", function () {
+      const file = this.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const section = getSelectedSection();
+        if (!section) return;
+        if (section.type === "gallery") {
+          section.images = section.images || [];
+          section.images.push(reader.result);
+        } else {
+          section.image = reader.result;
+        }
+        imageUpload.value = "";
+        render();
+        saveData();
+      };
+      reader.readAsDataURL(file);
+    });
+
+    document.addEventListener("mousemove", function (event) {
+      if (dragState) {
+        const section = data.sections.find(s => s.id === dragState.id);
+        if (!section) return;
+        section.x = Math.max(0, dragState.startX + event.clientX - dragState.mouseX);
+        section.y = Math.max(90, dragState.startY + event.clientY - dragState.mouseY);
+        renderSectionsOnly();
+      }
+
+      if (resizeState) {
+        const section = data.sections.find(s => s.id === resizeState.id);
+        if (!section) return;
+        section.w = Math.max(220, resizeState.startW + event.clientX - resizeState.mouseX);
+        section.h = Math.max(150, resizeState.startH + event.clientY - resizeState.mouseY);
+        renderSectionsOnly();
+      }
+    });
+
+    document.addEventListener("mouseup", function () {
+      if (dragState || resizeState) saveData();
+      dragState = null;
+      resizeState = null;
+    });
+
+    setInterval(renderSectionsOnly, 1000);
+    render();
+
+    function loadData() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        return saved ? JSON.parse(saved) : structuredClone(starterData);
+      } catch (error) {
+        return JSON.parse(JSON.stringify(starterData));
+      }
+    }
+
+    function saveData() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function getSelectedSection() {
+      return data.sections.find(section => section.id === selectedId);
+    }
+
+    function updateSelected(patch) {
+      const section = getSelectedSection();
+      if (!section) return;
+      Object.assign(section, patch);
+      render();
+      saveData();
+    }
+
+    function render() {
+      document.documentElement.style.setProperty("--page-bg", data.page.bg);
+      document.documentElement.style.setProperty("--font", data.page.font);
+      document.body.style.fontFamily = data.page.font;
+
+      pageTitle.value = data.page.title;
+      pageSubtitle.value = data.page.subtitle;
+      pageColor.value = data.page.bg;
+      pageFont.value = data.page.font;
+      soundToggle.textContent = `Sound: ${data.page.sound ? "on" : "off"}`;
+
+      renderTabs();
+      renderSectionsOnly();
+      renderEditor();
+    }
+
+    function renderTabs() {
+      navTabs.innerHTML = "";
+      data.tabs.forEach((tab, index) => {
+        const button = document.createElement("button");
+        button.className = "nav-tab";
+        button.textContent = tab.label;
+        button.draggable = true;
+        button.addEventListener("click", (event) => {
+          selectSection(tab.target);
+          popBubbles(event.clientX, event.clientY);
+          document.getElementById(tab.target)?.scrollIntoView({ behavior: "smooth", block: "center" });
+        });
+        button.addEventListener("dragstart", event => event.dataTransfer.setData("text/plain", String(index)));
+        button.addEventListener("dragover", event => event.preventDefault());
+        button.addEventListener("drop", event => {
+          event.preventDefault();
+          const from = Number(event.dataTransfer.getData("text/plain"));
+          const moved = data.tabs.splice(from, 1)[0];
+          data.tabs.splice(index, 0, moved);
+          renderTabs();
+          saveData();
+        });
+        navTabs.appendChild(button);
+      });
+    }
+
+    function renderSectionsOnly() {
+      sectionLayer.innerHTML = "";
+      data.sections.forEach(section => {
+        const card = document.createElement("section");
+        card.id = section.id;
+        card.className = `section-card ${section.id === selectedId ? "selected" : ""}`;
+        card.style.left = section.x + "px";
+        card.style.top = section.y + "px";
+        card.style.width = section.w + "px";
+        card.style.height = section.h + "px";
+        card.style.backgroundColor = section.bg;
+        card.style.borderColor = section.accent;
+        card.style.color = section.accent;
+        card.style.fontFamily = section.font;
+        card.style.fontSize = section.size + "px";
+
+        card.addEventListener("click", event => {
+          selectSection(section.id);
+          popBubbles(event.clientX, event.clientY);
+        });
+
+        const head = document.createElement("div");
+        head.className = "section-head";
+        head.style.backgroundColor = section.accent;
+        head.innerHTML = `<span class="section-title">✦ ${escapeHTML(section.title)}</span><button class="tiny-button" title="Delete">×</button>`;
+        head.addEventListener("mousedown", event => {
+          if (event.target.tagName === "BUTTON") return;
+          dragState = {
+            id: section.id,
+            mouseX: event.clientX,
+            mouseY: event.clientY,
+            startX: section.x,
+            startY: section.y
+          };
+        });
+        head.querySelector("button").addEventListener("click", event => {
+          event.stopPropagation();
+          selectedId = section.id;
+          deleteSelectedSection();
+        });
+
+        const body = document.createElement("div");
+        body.className = "section-body";
+        body.innerHTML = renderSectionContent(section);
+
+        const resize = document.createElement("div");
+        resize.className = "resize-handle";
+        resize.addEventListener("mousedown", event => {
+          event.stopPropagation();
+          resizeState = {
+            id: section.id,
+            mouseX: event.clientX,
+            mouseY: event.clientY,
+            startW: section.w,
+            startH: section.h
+          };
+        });
+
+        card.appendChild(head);
+        card.appendChild(body);
+        card.appendChild(resize);
+        sectionLayer.appendChild(card);
+      });
+    }
+
+    function renderSectionContent(section) {
+      if (section.type === "profile") {
+        const img = section.image ? `<img class="profile-img" src="${section.image}" alt="profile image">` : "";
+        return `<div class="profile-wrap">${img}<div>${escapeHTML(section.body || "")}</div></div>`;
+      }
+
+      if (section.type === "gallery") {
+        const imgs = (section.images || []).map(img => `<img class="gallery-img" src="${img}" alt="gallery image">`).join("");
+        return `<p>${escapeHTML(section.body || "")}</p><div class="gallery-grid">${imgs}</div>`;
+      }
+
+      if (section.type === "links") {
+        return `<div class="link-list">${(section.links || []).map(link => `<a href="${escapeAttr(link.url)}">${escapeHTML(link.label)} →</a>`).join("")}</div>`;
+      }
+
+      if (section.type === "poll") {
+        const total = (section.options || []).reduce((sum, option) => sum + Number(option.votes || 0), 0);
+        const showResults = section.revealWinner || section.endsAt <= Date.now();
+        const winner = [...(section.options || [])].sort((a, b) => Number(b.votes || 0) - Number(a.votes || 0))[0];
+        const options = (section.options || []).map((option, index) => {
+          const pct = total ? Math.round((Number(option.votes || 0) / total) * 100) : 0;
+          const result = showResults ? `<span>${pct}%</span><div class="bar"><div class="bar-fill" style="width:${pct}%"></div></div>` : "";
+          return `<button class="poll-option" onclick="votePoll('${section.id}', ${index}); event.stopPropagation();"><span>${escapeHTML(option.text)}</span> ${result}</button>`;
+        }).join("");
+        const winnerBox = showResults && winner ? `<div class="poll-winner">✦ Winner: ${escapeHTML(winner.text)}</div>` : "";
+        return `<div class="poll-question">${escapeHTML(section.question || "")}</div><p>Countdown: ${formatCountdown(section.endsAt)}</p>${options}${winnerBox}`;
+      }
+
+      return escapeHTML(section.body || "");
+    }
+
+    function renderEditor() {
+      const section = getSelectedSection();
+      if (!section) return;
+
+      sectionTitle.value = section.title || "";
+      sectionBg.value = section.bg || "#ffffff";
+      sectionAccent.value = section.accent || "#d91849";
+      sectionFont.value = section.font || "Verdana, Geneva, Tahoma, sans-serif";
+      sectionSize.value = section.size || 15;
+      fontSizeLabel.textContent = `${section.size || 15}px`;
+
+      const showBody = section.type !== "poll" && section.type !== "links";
+      bodyLabel.style.display = showBody ? "block" : "none";
+      sectionBody.style.display = showBody ? "block" : "none";
+      sectionBody.value = section.body || "";
+
+      renderPollEditor(section);
+      renderLinkEditor(section);
+    }
+
+    function renderPollEditor(section) {
+      if (section.type !== "poll") {
+        pollEditor.style.display = "none";
+        pollEditor.innerHTML = "";
+        return;
+      }
+
+      pollEditor.style.display = "grid";
+      pollEditor.style.gap = "8px";
+      pollEditor.innerHTML = `
+        <label>Poll question</label>
+        <input id="pollQuestion" value="${escapeAttr(section.question || "")}">
+        <label>Hours left</label>
+        <input id="pollHours" type="number" min="0" value="${Math.max(0, Math.ceil((section.endsAt - Date.now()) / 3600000))}">
+        <div id="pollOptions"></div>
+        <button class="main-button secondary" id="addPollOption">Add poll option</button>
+        <button class="main-button soft" id="toggleWinner">${section.revealWinner ? "Hide winner" : "Reveal winner"}</button>
+      `;
+
+      document.getElementById("pollQuestion").addEventListener("input", event => updateSelected({ question: event.target.value }));
+      document.getElementById("pollHours").addEventListener("change", event => updateSelected({ endsAt: Date.now() + Number(event.target.value || 0) * 3600000 }));
+      document.getElementById("addPollOption").addEventListener("click", () => {
+        section.options.push({ text: "New option", votes: 0 });
+        render();
+        saveData();
+      });
+      document.getElementById("toggleWinner").addEventListener("click", () => updateSelected({ revealWinner: !section.revealWinner }));
+
+      const pollOptions = document.getElementById("pollOptions");
+      pollOptions.innerHTML = "";
+      section.options.forEach((option, index) => {
+        const row = document.createElement("div");
+        row.style.display = "grid";
+        row.style.gridTemplateColumns = "1fr 64px 32px";
+        row.style.gap = "5px";
+        row.style.marginBottom = "6px";
+        row.innerHTML = `
+          <input value="${escapeAttr(option.text)}" aria-label="Poll option">
+          <input type="number" value="${Number(option.votes || 0)}" aria-label="Votes">
+          <button class="main-button danger" style="padding:4px">×</button>
+        `;
+        const inputs = row.querySelectorAll("input");
+        inputs[0].addEventListener("input", event => { option.text = event.target.value; renderSectionsOnly(); saveData(); });
+        inputs[1].addEventListener("input", event => { option.votes = Number(event.target.value || 0); renderSectionsOnly(); saveData(); });
+        row.querySelector("button").addEventListener("click", () => { section.options.splice(index, 1); render(); saveData(); });
+        pollOptions.appendChild(row);
+      });
+    }
+
+    function renderLinkEditor(section) {
+      if (section.type !== "links") {
+        linkEditor.style.display = "none";
+        linkEditor.innerHTML = "";
+        return;
+      }
+
+      linkEditor.style.display = "grid";
+      linkEditor.style.gap = "8px";
+      linkEditor.innerHTML = `<div id="linkRows"></div><button class="main-button secondary" id="addLink">Add link</button>`;
+      const linkRows = document.getElementById("linkRows");
+      section.links.forEach((link, index) => {
+        const row = document.createElement("div");
+        row.style.display = "grid";
+        row.style.gap = "5px";
+        row.style.marginBottom = "8px";
+        row.innerHTML = `
+          <input value="${escapeAttr(link.label)}" placeholder="Link label">
+          <input value="${escapeAttr(link.url)}" placeholder="URL">
+          <button class="main-button danger">Delete link</button>
+        `;
+        const inputs = row.querySelectorAll("input");
+        inputs[0].addEventListener("input", event => { link.label = event.target.value; renderSectionsOnly(); saveData(); });
+        inputs[1].addEventListener("input", event => { link.url = event.target.value; renderSectionsOnly(); saveData(); });
+        row.querySelector("button").addEventListener("click", () => { section.links.splice(index, 1); render(); saveData(); });
+        linkRows.appendChild(row);
+      });
+      document.getElementById("addLink").addEventListener("click", () => {
+        section.links.push({ label: "New link", url: "#" });
+        render();
+        saveData();
+      });
+    }
+
+    function selectSection(id) {
+      if (!data.sections.some(section => section.id === id)) return;
+      selectedId = id;
+      render();
+    }
+
+    function addSection() {
+      const id = "section-" + Date.now();
+      data.sections.push({
+        id,
+        type: "text",
+        title: "New Cute Box",
+        x: 70,
+        y: 930 + data.sections.length * 28,
+        w: 330,
+        h: 220,
+        bg: "#fff7fb",
+        accent: "#e25176",
+        font: data.page.font,
+        size: 15,
+        body: "Edit me! Add a prayer note, vlog update, shop announcement, or mini blog post."
+      });
+      selectedId = id;
+      render();
+      saveData();
+    }
+
+    function addTab() {
+      const section = getSelectedSection();
+      if (!section) return;
+      const label = prompt("Tab name?", section.title.replace(/[♡✦]/g, "").trim() || "New Tab");
+      if (!label) return;
+      data.tabs.push({ label, target: section.id });
+      renderTabs();
+      saveData();
+    }
+
+    function deleteSelectedSection() {
+      if (data.sections.length <= 1) {
+        showToast("Keep at least one section ♡");
+        return;
+      }
+      data.sections = data.sections.filter(section => section.id !== selectedId);
+      data.tabs = data.tabs.filter(tab => tab.target !== selectedId);
+      selectedId = data.sections[0].id;
+      render();
+      saveData();
+    }
+
+    function resetPage() {
+      const ok = confirm("Reset everything back to the starter blog?");
+      if (!ok) return;
+      localStorage.removeItem(STORAGE_KEY);
+      data = JSON.parse(JSON.stringify(starterData));
+      selectedId = data.sections[0].id;
+      render();
+      showToast("Reset complete ♡");
+    }
+
+    function votePoll(sectionId, index) {
+      const section = data.sections.find(s => s.id === sectionId);
+      if (!section || !section.options[index]) return;
+      section.options[index].votes = Number(section.options[index].votes || 0) + 1;
+      renderSectionsOnly();
+      saveData();
+      playSound();
+    }
+
+    function popBubbles(clientX, clientY) {
+      if (data.page.sound) playSound();
+      const rect = siteShell.getBoundingClientRect();
+      for (let i = 0; i < 9; i++) {
+        const bubble = document.createElement("span");
+        const size = 10 + Math.random() * 22;
+        bubble.className = "bubble";
+        bubble.style.left = (clientX - rect.left) + "px";
+        bubble.style.top = (clientY - rect.top) + "px";
+        bubble.style.width = size + "px";
+        bubble.style.height = size + "px";
+        bubble.style.setProperty("--drift", (-40 + Math.random() * 80) + "px");
+        siteShell.appendChild(bubble);
+        setTimeout(() => bubble.remove(), 1200);
+      }
+    }
+
+    function playSound() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        const ctx = new AudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(740, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1180, ctx.currentTime + .08);
+        gain.gain.setValueAtTime(.07, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + .2);
+        osc.start();
+        osc.stop(ctx.currentTime + .22);
+      } catch (error) {}
+    }
+
+    function formatCountdown(endsAt) {
+      const ms = Math.max(0, endsAt - Date.now());
+      const h = Math.floor(ms / 3600000);
+      const m = Math.floor((ms % 3600000) / 60000);
+      const s = Math.floor((ms % 60000) / 1000);
+      return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 1500);
+    }
+
+    function escapeHTML(value) {
+      return String(value || "").replace(/[&<>"]/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[char]));
+    }
+
+    function escapeAttr(value) {
+      return escapeHTML(value).replace(/'/g, "&#039;");
+    }
+  </script>
+</body>
+</html>
